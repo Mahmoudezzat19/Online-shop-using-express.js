@@ -18,13 +18,11 @@ const getProductsFromFile = cb => {
 };
 
 module.exports = class Product {
-  constructor(newProduct) {
-    console.log(newProduct);
-    this.title = newProduct.title;
-    this.imageURL = newProduct.imageURL;
-    this.description = newProduct.description;
-    this.price = newProduct.price;
-    console.log(this);
+  constructor(title, imageUrl, description, price) {
+    this.title = title;
+    this.imageUrl = imageUrl;
+    this.description = description;
+    this.price = price;
   }
 
   save() {
@@ -44,7 +42,7 @@ module.exports = class Product {
   static findById(id, cb) {
     getProductsFromFile(products => {
       const product = products.find(p => p.id === id);
-      cb(products);
-    }) 
+      cb(product);
+    });
   }
 };
