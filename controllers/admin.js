@@ -6,6 +6,7 @@ exports.getAddProduct = (req, res, next) => {
     path: '/admin/add-product',
     editing: false
   });
+  console.log("test");
 };
 
 exports.postAddProduct = (req, res, next) => {
