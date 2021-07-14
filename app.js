@@ -10,6 +10,9 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
+const Product = require('./models/product');
+const User = require('./models/user');
+
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
@@ -23,11 +26,15 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
+User.hasMany(Product, {constraints: true, onDelete: 'CASCADE '});
+
+//force: true for development only
 sequelize.sync().then(result => {
     //do smthin
+    app.listen(3000);
 })
 .catch(err => {
     console.log(err);
 });
 
-app.listen(3000);
+
