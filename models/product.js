@@ -29,16 +29,3 @@ const Product = sequelize.define('product', {
 });
 
 module.exports = Product;
-
-
-//add product
-
-//delete product
-
-//update product
-
-//find product
-
-//get all products
-
-
