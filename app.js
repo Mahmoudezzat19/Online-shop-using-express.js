@@ -12,6 +12,8 @@ app.set('views', 'views');
 
 const Product = require('./models/product');
 const User = require('./models/user');
+const Cart = require('./models/cart');
+const CartItem = require('./models/cart-item');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
@@ -26,10 +28,21 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
+// User-Product association
+//User has many products
 User.hasMany(Product, {constraints: true, onDelete: 'CASCADE '});
 
+//User-Cart association
+// User has only one Cart
+User.hasOne(Cart);
+
+// Cart-Product association
+//many-to-many relation between Cart-Product through CartItem
+Cart.belongsToMany(Product, {through: CartItem});
+Product.belongsToMany(Cart, {through: CartItem});
+
 //force: true for development only
-sequelize.sync().then(result => {
+sequelize.sync({force: true}).then(result => {
     //do smthin
     app.listen(3000);
 })
