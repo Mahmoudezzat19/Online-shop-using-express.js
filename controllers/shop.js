@@ -103,8 +103,6 @@ exports.postCartDeleteProduct = async (req, res, next) => {
   await cartItem.destroy();
   res.redirect('/');
 };
-
-/* ********************************************* */
 //TODO
 
 //create order
