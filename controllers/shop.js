@@ -16,20 +16,6 @@ exports.getProducts = (req, res, next) => {
   })
 };
 
-/*
-
-exports.getProduct = async(req, res, next) => {
-  const prodId = req.params.productId;
-  const product = await Product.findByPk(prodId);
-   res.render('shop/product-detail', {
-      product: product,
-      pageTitle: product.title,
-      path: '/products'
-    });
-};
-
-*/
-
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
   Product.findByPk(prodId).then(product => {
@@ -132,6 +118,7 @@ exports.getOrders = async (req, res, next) => {
   });
 };
 
+//TODO
 exports.getCheckout = (req, res, next) => {
   res.render('shop/checkout', {
     path: '/checkout',
