@@ -109,6 +109,7 @@ exports.postOrder = async (req, res, next) => {
   }
 }
 
+//todo
 exports.getOrders = async (req, res, next) => {
   const orders = await req.user.getOrders();
   res.render('shop/orders', {
