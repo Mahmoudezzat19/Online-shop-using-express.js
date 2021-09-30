@@ -21,15 +21,19 @@ app.set('views', 'views');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
+const authRoutes = require('./routes/auth');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 //adding user where ID == 1 to every request
 app.use((req, res, next) => {
+    let isLoggedIn = undefined;
+    if (req.get('Cookie') !== undefined) isLoggedIn = req.get('Cookie').split('=')[1];
+    req.isLoggedIn = isLoggedIn;
     User.findByPk(1).then(user => {
         req.user = user;
-        console.log(user);
+        //console.log(user);
         next();
     })
     .catch(error => console.log(error));
@@ -37,6 +41,7 @@ app.use((req, res, next) => {
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
+app.use(authRoutes);
 
 app.use(errorController.get404);
 
@@ -65,7 +70,7 @@ db.sync().then(result => {
     }
     return user;
 }).then(user => {
-    console.log(user);
+    //console.log(user);
     app.listen(3000);
 })
 .catch(error => {
