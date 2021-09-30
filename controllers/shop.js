@@ -4,35 +4,45 @@ const User = require('../models/user');
 const Order = require('../models/order');
 const { findOrCreate } = require('../models/product');
 
+// view /products
 exports.getProducts = (req, res, next) => {
+  console.log('products page authentication: ', req.isLoggedIn);
+  console.log('products page cookies',req.get('Cookie'));
   Product.findAll().then(products => {
     res.render('shop/product-list', {
       prods: products,
       pageTitle: 'All Products',
-      path: '/products'
+      path: '/products',
+      isAuthenticated: req.isLoggedIn
     });
   }).catch(error => {
     console.log(error);
   })
 };
 
+// view /product/productId
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
   Product.findByPk(prodId).then(product => {
     res.render('shop/product-detail', {
       product: product,
       pageTitle: product.title,
-      path: '/products'
+      path: '/products',
+      isAuthenticated: req.isLoggedIn
     });
   }).catch(error => console.log(error));
 };
 
+// view main page
 exports.getIndex = (req, res, next) => {
+  console.log('shop page authentication: ', req.isLoggedIn);
+  console.log('shop page cookies',req.get('Cookie'));
   Product.findAll().then(products => {
     res.render('shop/index', {
       prods: products,
       pageTitle: 'Shop',
-      path: '/'
+      path: '/',
+      isAuthenticated: req.isLoggedIn
     });
   }).catch(error => {
     console.log(error);
@@ -57,7 +67,8 @@ exports.getCart = async (req, res, next) => {
       path: '/cart',
       pageTitle: 'Your Cart',
       products: cartProducts,
-      totalPrice: total_price
+      totalPrice: total_price,
+      isAuthenticated: req.isLoggedIn
     });
   }).catch(error => console.log(error));
 };
@@ -115,7 +126,8 @@ exports.getOrders = async (req, res, next) => {
   res.render('shop/orders', {
     orders: orders,
     path: '/orders',
-    pageTitle: 'Your Orders'
+    pageTitle: 'Your Orders',
+    isAuthenticated: req.isLoggedIn
   });
 };
 
@@ -123,6 +135,7 @@ exports.getOrders = async (req, res, next) => {
 exports.getCheckout = (req, res, next) => {
   res.render('shop/checkout', {
     path: '/checkout',
-    pageTitle: 'Checkout'
+    pageTitle: 'Checkout',
+    isAuthenticated: req.isLoggedIn
   });
 };
