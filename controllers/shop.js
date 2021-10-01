@@ -35,7 +35,7 @@ exports.getProduct = (req, res, next) => {
 
 // view main page
 exports.getIndex = (req, res, next) => {
-  console.log('shop page authentication: ', req.isLoggedIn);
+  console.log('shop page authentication: ', req.session.isLoggedIn);
   console.log('shop page cookies',req.get('Cookie'));
   Product.findAll().then(products => {
     res.render('shop/index', {
@@ -53,10 +53,10 @@ exports.getIndex = (req, res, next) => {
 exports.getCart = async (req, res, next) => {
   const [cart, created] = await Cart.findOrCreate({
     where: {
-      UserId: req.user.id, 
+      UserId: req.session.user.id, 
     },
     defaults: {
-      UserId: req.user.id
+      UserId: req.session.sessionUser.id
     }
   });
   const products = await cart.getProducts();
@@ -74,10 +74,11 @@ exports.getCart = async (req, res, next) => {
 };
 
 //todo refactor and understand
+//add new or existed product to cart.
 exports.postCart = async (req, res, next) => {
   const productId = req.body.productId;
   let new_quantity = 1;
-  const fetchedCart = await req.user.getCart();
+  const fetchedCart = await req.session.sessionUser.getCart();
   const cartProduct = await fetchedCart.getProducts({where: {id: productId}});
   const product = cartProduct.length > 0 && cartProduct[0];
   const fetchedProduct = await Product.findByPk(productId);
@@ -92,9 +93,10 @@ exports.postCart = async (req, res, next) => {
   res.redirect('/cart');
 };
 
+//Delete Product by ID.
 exports.postCartDeleteProduct = async (req, res, next) => {
   const productId = req.body.productId;
-  const fetchedCart = await req.user.getCart();
+  const fetchedCart = await req.session.sessionUser.getCart();
   const cartItems = await fetchedCart.getProducts({where: {id: productId}});
   cartItem = cartItems[0];
   await cartItem.destroy();
@@ -108,7 +110,7 @@ exports.postOrder = async (req, res, next) => {
     const cart = await req.user.getCart();
     const products = await cart.getProducts();
     //put cart-products into order-items;
-    const new_order = await req.user.createOrder({statues: false});
+    const new_order = await req.session.user.createOrder({statues: false});
     await new_order.addProducts(products.map(product => {
       product.OrderItem = {quantity: product.CartItem.quantity};
       return product;
@@ -122,7 +124,7 @@ exports.postOrder = async (req, res, next) => {
 
 //todo
 exports.getOrders = async (req, res, next) => {
-  const orders = await req.user.getOrders();
+  const orders = await req.session.sessionUser.getOrders();
   res.render('shop/orders', {
     orders: orders,
     path: '/orders',

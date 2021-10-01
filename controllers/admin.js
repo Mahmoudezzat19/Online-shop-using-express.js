@@ -16,12 +16,12 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  req.user.createProduct({
+  req.session.sessionUser.createProduct({
     title: title,
     imageUrl: imageUrl,
     price: price,
     description: description,
-    UserId: req.user.id
+    UserId: req.session.sessionUser.id
   }).then(result => {
     console.log('product from admin created successfully');
   }).catch(error => {
@@ -37,7 +37,7 @@ exports.getEditProduct = (req, res, next) => {
   if (!editMode) res.redirect('/admin/products');
   const productId = req.params.productId;
   console.log(productId);
-  req.user.getProducts( {where: { id: productId } }).then(products => {
+  req.session.sessionUser.getProducts( {where: { id: productId } }).then(products => {
     const product = products[0];
     if (!product) res.redirect('/');
     res.render('admin/edit-product', {
@@ -63,7 +63,7 @@ exports.postEditProduct = (req, res, next) => {
     price: updatedPrice,
     imageUrl: updatedImageUrl,
     description: updatedDesc,
-    userId: req.user.id
+    userId: req.session.sessionUser.id
   }
   Product.update(updated_product, {
     where: {
@@ -76,7 +76,8 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  req.user.getProducts().then(products => {
+  console.log('user info from session at admin.js:: ', req.session.sessionUser);
+  req.session.sessionUser.getProducts().then(products => {
     res.render('admin/products', {
       prods: products,
       pageTitle: 'Admin Products',
