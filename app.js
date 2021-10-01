@@ -3,6 +3,10 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 
+const session = require('express-session');
+const mysql2 = require('mysql2/promise');
+const mySQLStore = require('express-mysql-session')(session);
+
 const errorController = require('./controllers/error');
 
 const db = require('./util/database');
@@ -25,6 +29,25 @@ const authRoutes = require('./routes/auth');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+const options = {
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    password: 'Mbatsh191718',
+    database: 'node-complete'
+};
+
+const connection = mysql2.createPool(options);
+const sessionStore = new mySQLStore({}, connection);
+
+//session middleware
+app.use(session({
+    secret: 'my secret',
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: false
+}));
 
 //adding user where ID == 1 to every request
 app.use((req, res, next) => {
