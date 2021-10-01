@@ -11,6 +11,7 @@ const errorController = require('./controllers/error');
 
 const db = require('./util/database');
 
+//Model objects for database association.
 const Product = require('./models/product');
 const User = require('./models/user');
 const Cart = require('./models/cart');
@@ -20,9 +21,11 @@ const OrderItem = require('./models/order-item');
 
 const app = express();
 
+//views
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
+//Routes
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
@@ -30,6 +33,7 @@ const authRoutes = require('./routes/auth');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+//options object for mysql connection.
 const options = {
     host: 'localhost',
     port: 3306,
@@ -38,8 +42,12 @@ const options = {
     database: 'node-complete'
 };
 
+//mysql2 connection pool.
 const connection = mysql2.createPool(options);
+
+//mysql sessionStore for the session middleware
 const sessionStore = new mySQLStore({}, connection);
+
 
 //session middleware
 app.use(session({
@@ -49,41 +57,42 @@ app.use(session({
     saveUninitialized: false
 }));
 
-//adding user where ID == 1 to every request
+//middleware to convert user object into user model.
 app.use((req, res, next) => {
-    let isLoggedIn = undefined;
-    if (req.get('Cookie') !== undefined) isLoggedIn = req.get('Cookie').split('=')[1];
-    req.isLoggedIn = isLoggedIn;
-    User.findByPk(1).then(user => {
-        req.user = user;
-        //console.log(user);
-        next();
-    })
-    .catch(error => console.log(error));
-})
+    if(req.session.user !== undefined) {
+        const sessionUser = User.build({...req.session.user});
+        req.session.sessionUser = sessionUser;
+    }
+    next();
+});
 
+//Routes
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
-
 app.use(errorController.get404);
 
-// User, product association
+// User, product associations
 User.hasMany(Product, {constraints: true, onDelete: 'CASCADE'});
 Product.belongsTo(User);
 
+//User, Cart associations
 User.hasOne(Cart, {constraints: true, onDelete: 'CASCADE'});
 Cart.belongsTo(User);
 
+//Cart, Product associations.
 Cart.belongsToMany(Product, {through: CartItem});
 Product.belongsToMany(Cart, {through: CartItem});
 
+//User, Order associations.
 User.hasMany(Order);
 Order.belongsTo(User);
 
+//Order, Product associations.
 Order.belongsToMany(Product, {through: OrderItem});
 Product.belongsToMany(Order, {through: OrderItem});
 
+//Database.
 db.sync().then(result => {
     const user = User.findByPk(1);
     return user;
