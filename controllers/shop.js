@@ -13,7 +13,7 @@ exports.getProducts = (req, res, next) => {
       prods: products,
       pageTitle: 'All Products',
       path: '/products',
-      isAuthenticated: req.isLoggedIn
+      isAuthenticated: req.session.isLoggedIn
     });
   }).catch(error => {
     console.log(error);
@@ -28,8 +28,8 @@ exports.getProduct = (req, res, next) => {
       product: product,
       pageTitle: product.title,
       path: '/products',
-      isAuthenticated: req.isLoggedIn
-    });
+      isAuthenticated: req.session.isLoggedIn
+    }); 
   }).catch(error => console.log(error));
 };
 
@@ -42,7 +42,7 @@ exports.getIndex = (req, res, next) => {
       prods: products,
       pageTitle: 'Shop',
       path: '/',
-      isAuthenticated: req.isLoggedIn
+      isAuthenticated: req.session.isLoggedIn
     });
   }).catch(error => {
     console.log(error);
@@ -68,7 +68,7 @@ exports.getCart = async (req, res, next) => {
       pageTitle: 'Your Cart',
       products: cartProducts,
       totalPrice: total_price,
-      isAuthenticated: req.isLoggedIn
+      isAuthenticated: req.session.isLoggedIn
     });
   }).catch(error => console.log(error));
 };
@@ -127,7 +127,7 @@ exports.getOrders = async (req, res, next) => {
     orders: orders,
     path: '/orders',
     pageTitle: 'Your Orders',
-    isAuthenticated: req.isLoggedIn
+    isAuthenticated: req.session.isLoggedIn
   });
 };
 
@@ -136,6 +136,6 @@ exports.getCheckout = (req, res, next) => {
   res.render('shop/checkout', {
     path: '/checkout',
     pageTitle: 'Checkout',
-    isAuthenticated: req.isLoggedIn
+    isAuthenticated: req.session.isLoggedIn
   });
 };
