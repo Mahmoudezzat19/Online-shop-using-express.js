@@ -53,7 +53,7 @@ exports.getIndex = (req, res, next) => {
 exports.getCart = async (req, res, next) => {
   const [cart, created] = await Cart.findOrCreate({
     where: {
-      UserId: req.session.user.id, 
+      UserId: req.session.sessionUser.id, 
     },
     defaults: {
       UserId: req.session.sessionUser.id
@@ -73,11 +73,12 @@ exports.getCart = async (req, res, next) => {
   }).catch(error => console.log(error));
 };
 
-//todo refactor and understand
 //add new or existed product to cart.
 exports.postCart = async (req, res, next) => {
   const productId = req.body.productId;
+  console.log('product Id in the index page: ', productId);
   let new_quantity = 1;
+  //console.log('user cart: ', req.session.sessionUser);
   const fetchedCart = await req.session.sessionUser.getCart();
   const cartProduct = await fetchedCart.getProducts({where: {id: productId}});
   const product = cartProduct.length > 0 && cartProduct[0];
@@ -125,6 +126,7 @@ exports.postOrder = async (req, res, next) => {
 //todo
 exports.getOrders = async (req, res, next) => {
   const orders = await req.session.sessionUser.getOrders();
+  console.log('orders:::: ', orders);
   res.render('shop/orders', {
     orders: orders,
     path: '/orders',
