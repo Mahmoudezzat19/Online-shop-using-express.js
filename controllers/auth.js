@@ -10,14 +10,21 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.postLogin = async (req, res, next) => {
-    const user = await User.findByPk(1);
-
-    req.session.user = user;
-
-    console.log("user info stored in the session: ", req.session.user);
-    
-    req.session.isLoggedIn = true;
-    res.redirect('/');
+    const userEmail = req.body.email;
+    const userPassword = req.body.password;
+    const user = await User.findOne({where: {email: userEmail}});
+    if (user) {
+        console.log(user);
+        const password = await bcrypt.compare(userPassword, user.password);
+        console.log(password);
+        if (password) {
+            
+            req.session.user = user;
+            req.session.isLoggedIn = true;
+            return res.redirect('/');
+        }
+    }
+    res.redirect('/login');
 };
 
 exports.getSignup = (req, res, next) => {
@@ -29,9 +36,6 @@ exports.getSignup = (req, res, next) => {
 }
 
 exports.postSignup = async (req, res, next) => {
-    //store a new user in the database.
-    //check if user exists or not.
-    //check if unique password.
     const userName = req.body.name;
     const userEmail = req.body.email;
     const userPassword = req.body.password;
