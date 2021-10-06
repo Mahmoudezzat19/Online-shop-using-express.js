@@ -98,14 +98,8 @@ exports.postCart = async (req, res, next) => {
 //Delete CartItem by product ID.
 //todo
 exports.postCartDeleteProduct = async (req, res, next) => {
-  // get cart Id.
-  // get product Id.
-  // remove cartItem using cart Id and product Id.
-
   const productId = req.body.productId;
-  //console.log('product ID: ', productId);
   const userFetchedCart = await req.session.sessionUser.getCart();
-  //console.log('cart', userFetchedCart.id);
   await CartItem.destroy({
     where: {
       ProductId: productId
