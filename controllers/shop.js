@@ -2,6 +2,7 @@ const Product = require('../models/product');
 const Cart = require('../models/cart');
 const User = require('../models/user');
 const Order = require('../models/order');
+const CartItem = require('../models/cart-item');
 const { findOrCreate } = require('../models/product');
 
 // view /products
@@ -94,13 +95,22 @@ exports.postCart = async (req, res, next) => {
   res.redirect('/cart');
 };
 
-//Delete Product by ID.
+//Delete CartItem by product ID.
+//todo
 exports.postCartDeleteProduct = async (req, res, next) => {
+  // get cart Id.
+  // get product Id.
+  // remove cartItem using cart Id and product Id.
+
   const productId = req.body.productId;
-  const fetchedCart = await req.session.sessionUser.getCart();
-  const cartItems = await fetchedCart.getProducts({where: {id: productId}});
-  cartItem = cartItems[0];
-  await cartItem.destroy();
+  //console.log('product ID: ', productId);
+  const userFetchedCart = await req.session.sessionUser.getCart();
+  //console.log('cart', userFetchedCart.id);
+  await CartItem.destroy({
+    where: {
+      ProductId: productId
+    }
+  });
   res.redirect('/');
 };
 //TODO
