@@ -14,11 +14,8 @@ exports.postLogin = async (req, res, next) => {
     const userPassword = req.body.password;
     const user = await User.findOne({where: {email: userEmail}});
     if (user) {
-        console.log(user);
         const password = await bcrypt.compare(userPassword, user.password);
-        console.log(password);
         if (password) {
-            
             req.session.user = user;
             req.session.isLoggedIn = true;
             return res.redirect('/');
