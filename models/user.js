@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = require('../util/database');
+const queryInterface = sequelize.getQueryInterface();
 
 const User = sequelize.define('User', {
     id: {
@@ -11,6 +12,11 @@ const User = sequelize.define('User', {
     },
     name: {
         type: DataTypes.STRING,
+        allowNull: false
+    },
+    password: {
+        type: DataTypes.STRING,
+        unique: true,
         allowNull: false
     },
     email: {
