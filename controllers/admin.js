@@ -37,6 +37,7 @@ exports.getEditProduct = (req, res, next) => {
   if (!editMode) res.redirect('/admin/products');
   const productId = req.params.productId;
   console.log(productId);
+  console.log('authintication: ', req.session.isLoggedIn);
   req.session.sessionUser.getProducts( {where: { id: productId } }).then(products => {
     const product = products[0];
     if (!product) res.redirect('/');
@@ -45,12 +46,12 @@ exports.getEditProduct = (req, res, next) => {
       path: '/admin/edit-product',
       editing: editMode,
       product: product,
-      isAuthenticated: req.isLoggedIn
+      isAuthenticated: req.session.isLoggedIn
     });
   }).catch(error => console.log(error)); 
 };
 
-exports.postEditProduct = (req, res, next) => {
+exports.postEditProduct = async (req, res, next) => {
   const prodId = req.body.productId;
   const updatedTitle = req.body.title;
   const updatedPrice = req.body.price;
@@ -65,19 +66,19 @@ exports.postEditProduct = (req, res, next) => {
     description: updatedDesc,
     userId: req.session.sessionUser.id
   }
-  Product.update(updated_product, {
+  const result = await Product.update(updated_product, {
     where: {
       id: prodId
     }
-  }).then(result => {
-    res.redirect('/admin/products');
-  }).catch(error => console.log(error));
+  })
+  res.redirect('/admin/products');
+  
   
 };
 
 exports.getProducts = (req, res, next) => {
   console.log('user info from session at admin.js:: ', req.session.sessionUser);
-  req.session.sessionUser.getProducts().then(products => {
+  Product.findAll().then(products => {
     res.render('admin/products', {
       prods: products,
       pageTitle: 'Admin Products',
