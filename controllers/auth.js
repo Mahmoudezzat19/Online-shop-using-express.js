@@ -1,5 +1,7 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
+const Cart = require('../models/cart');
+const { findOrCreate } = require('../models/product');
 
 exports.getLogin = (req, res, next) => {
     res.render('auth/login', {
@@ -7,18 +9,15 @@ exports.getLogin = (req, res, next) => {
         isAuthenticated: req.session.isLoggedIn,
         pageTitle: 'Login'
     });
-};
+};  
 
 exports.postLogin = async (req, res, next) => {
     const userEmail = req.body.email;
     const userPassword = req.body.password;
     const user = await User.findOne({where: {email: userEmail}});
     if (user) {
-        console.log(user);
         const password = await bcrypt.compare(userPassword, user.password);
-        console.log(password);
         if (password) {
-            
             req.session.user = user;
             req.session.isLoggedIn = true;
             return res.redirect('/');
@@ -43,11 +42,14 @@ exports.postSignup = async (req, res, next) => {
     const confirmPassword = req.body.confirmPassword;
     const user = await User.findOne({where: {email: userEmail}});
     if (user === null) {
-        await User.create({
+        const new_user = await User.create({
             name: userName,
             email: userEmail,
             password: hashedPassword
         });
+        
+        const cart = await Cart.create({UserId: new_user.id});
+          console.log('cart: ', cart);
         return res.redirect('/login');
     }
 }

@@ -105,7 +105,7 @@ exports.postCartDeleteProduct = async (req, res, next) => {
       ProductId: productId
     }
   });
-  res.redirect('/');
+  res.redirect('/cart');
 };
 //TODO
 
