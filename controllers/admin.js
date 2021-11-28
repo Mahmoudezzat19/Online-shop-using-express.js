@@ -51,13 +51,20 @@ exports.getEditProduct = (req, res, next) => {
   }).catch(error => console.log(error)); 
 };
 
+/***TODO */
+// front end doesn't send product id.
 exports.postEditProduct = async (req, res, next) => {
+  
   const prodId = req.body.productId;
   const updatedTitle = req.body.title;
   const updatedPrice = req.body.price;
   const updatedImageUrl = req.body.imageUrl;
   const updatedDesc = req.body.description;
-  
+
+  console.log('product Id: ', prodId);
+
+  if (!prodId) return res.redirect('/');
+
   const updated_product = {
     id: prodId,
     title: updatedTitle,
@@ -71,6 +78,7 @@ exports.postEditProduct = async (req, res, next) => {
       id: prodId
     }
   })
+  console.log('a7eeh');
   res.redirect('/admin/products');
   
   
@@ -98,3 +106,5 @@ exports.postDeleteProduct = (req, res, next) => {
   }).then(result => res.redirect('/admin/products'))
     .catch(error => console.log(error));
 };
+
+
