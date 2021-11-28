@@ -3,6 +3,8 @@ const bcrypt = require('bcryptjs');
 const Cart = require('../models/cart');
 const { findOrCreate } = require('../models/product');
 
+
+//get views of the login page
 exports.getLogin = (req, res, next) => {
     res.render('auth/login', {
         path: '/login',
@@ -11,6 +13,9 @@ exports.getLogin = (req, res, next) => {
     });
 };  
 
+
+// post handleer of email and password for loging in
+// encrypting the password and check if it exists in the database related to the user email
 exports.postLogin = async (req, res, next) => {
     const userEmail = req.body.email;
     const userPassword = req.body.password;
@@ -26,6 +31,8 @@ exports.postLogin = async (req, res, next) => {
     res.redirect('/login');
 };
 
+
+// get signup page views
 exports.getSignup = (req, res, next) => {
     res.render('auth/signup', {
         path: '/signup',
@@ -34,6 +41,11 @@ exports.getSignup = (req, res, next) => {
     });
 }
 
+
+//post request to create a new user.
+// if an email does not exists in the database:
+//  a new user will be created with the new hashed password
+// create a new cart for the new user.
 exports.postSignup = async (req, res, next) => {
     const userName = req.body.name;
     const userEmail = req.body.email;
@@ -54,9 +66,20 @@ exports.postSignup = async (req, res, next) => {
     }
 }
 
+
+// post request of logging out
+// delete the session related to the user.
 exports.postLogout = (req, res, next) => {
     req.session.destroy((err) => {
         console.log(err);
         res.redirect('/');
+    });
+}
+
+exports.getResetPassword = (req, res, next) => {
+    res.render('auth/reset', {
+        path: '/reset',
+        pageTitle: 'Reset Password',
+        isAuthenticated: req.session.isLoggedIn
     });
 }

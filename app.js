@@ -3,6 +3,7 @@ const path = require('path');
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const csurf = require('csurf');
 
 const session = require('express-session');
 const mysql2 = require('mysql2/promise');
@@ -22,7 +23,11 @@ const OrderItem = require('./models/order-item');
 
 const app = express();
 
+//const csurfProtection = csurf();
+
 //views
+
+
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
@@ -57,6 +62,8 @@ app.use(session({
     resave: false,
     saveUninitialized: false
 }));
+
+//app.use(csurfProtection);
 
 //middleware to convert user object into user model.
 app.use((req, res, next) => {
@@ -99,7 +106,7 @@ db.sync().then(result => {
     return user;
 }).then(user => {
     if (!user) {
-        User.create({name: 'Ragai', email: 'ragai@gmail.com'});
+        User.create({name: 'Ragai', email: 'ragai@gmail.com', password: 'ali'});
     }
     return user;
 }).then(user => {
